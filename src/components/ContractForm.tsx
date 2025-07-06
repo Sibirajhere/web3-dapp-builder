@@ -8,20 +8,22 @@ const ContractForm: React.FC = () => {
   const [supply, setSupply] = useState<number | ''>(''); // ERC20
   const [baseURI, setBaseURI] = useState('');             // ERC721
 
+  const [contractCode, setContractCode] = useState<string>(''); // ✅ New state
+
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const config = {
-    type: contractType,
-    name,
-    symbol,
-    supply: contractType === 'ERC20' && supply !== '' ? Number(supply) : undefined,
-    baseURI: contractType === 'ERC721' ? baseURI : undefined,
+    const config = {
+      type: contractType,
+      name,
+      symbol,
+      supply: contractType === 'ERC20' ? supply as number : undefined,
+      baseURI: contractType === 'ERC721' ? baseURI : undefined,
+    };
+
+    const code = await generateContract(config);
+    setContractCode(code); // ✅ Save generated code
   };
-
-  const contractCode = await generateContract(config);
-  console.log('📝 Final Contract Code:\n', contractCode);
-};
 
   return (
     <div>
@@ -45,31 +47,42 @@ const ContractForm: React.FC = () => {
           <input type="text" value={symbol} onChange={(e) => setSymbol(e.target.value)} />
         </div>
 
-        {/* ✅ Conditional Inputs */}
         {contractType === 'ERC20' && (
           <div>
             <label>Total Supply:</label>
-            <input
-              type="number"
-              value={supply}
-              onChange={(e) => setSupply(Number(e.target.value))}
-            />
+            <input type="number" value={supply} onChange={(e) => setSupply(Number(e.target.value))} />
           </div>
         )}
 
         {contractType === 'ERC721' && (
           <div>
             <label>Base URI:</label>
-            <input
-              type="text"
-              value={baseURI}
-              onChange={(e) => setBaseURI(e.target.value)}
-            />
+            <input type="text" value={baseURI} onChange={(e) => setBaseURI(e.target.value)} />
           </div>
         )}
 
         <button type="submit">Generate Contract</button>
       </form>
+
+      {/* ✅ Show Preview if available */}
+      {contractCode && (
+        <div style={{ marginTop: '20px' }}>
+          <h3>🔍 Smart Contract Preview:</h3>
+          <textarea
+            readOnly
+            value={contractCode}
+            style={{
+              width: '100%',
+              height: '300px',
+              background: '#f5f5f5',
+              fontFamily: 'monospace',
+              padding: '10px',
+              border: '1px solid #ccc',
+              whiteSpace: 'pre-wrap'
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };
