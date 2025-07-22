@@ -4,11 +4,10 @@
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "types": ["node", "hardhat"]
   },
-  "include": ["./scripts", "./test", "./typechain-types", "./hardhat.config.ts"]
+  "include": ["./scripts", "./test", "./typechain-types", "./hardhat.config.ts", "./backend"]
 }

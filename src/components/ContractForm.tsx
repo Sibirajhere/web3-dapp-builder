@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { generateContract } from '../utils/generateContract';
+import axios from 'axios';
 
 const ContractForm: React.FC = () => {
   const [contractType, setContractType] = useState<'ERC20' | 'ERC721'>('ERC20');
@@ -8,7 +9,9 @@ const ContractForm: React.FC = () => {
   const [supply, setSupply] = useState<number | ''>(''); // ERC20
   const [baseURI, setBaseURI] = useState('');             // ERC721
 
-  const [contractCode, setContractCode] = useState<string>(''); // ✅ New state
+  const [contractCode, setContractCode] = useState<string>(''); // Generated code
+  const [deployedAddress, setDeployedAddress] = useState<string | null>(null);
+  const [isDeploying, setIsDeploying] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +25,28 @@ const ContractForm: React.FC = () => {
     };
 
     const code = await generateContract(config);
-    setContractCode(code); // ✅ Save generated code
+    setContractCode(code);
+    setDeployedAddress(null); // Clear previous
+  };
+
+  const handleDeploy = async () => {
+    if (!contractCode || !name) return alert("Generate the contract first!");
+
+    try {
+      setIsDeploying(true);
+      const res = await axios.post('http://localhost:3000/zypher/deploy', {
+        contractSource: contractCode,
+        contractName: name,
+        constructorArgs: [], // optional: can be handled dynamically
+      });
+
+      setDeployedAddress(res.data.address);
+    } catch (err) {
+      console.error("❌ Deployment failed:", err);
+      alert("❌ Deployment failed. See console.");
+    } finally {
+      setIsDeploying(false);
+    }
   };
 
   return (
@@ -81,6 +105,28 @@ const ContractForm: React.FC = () => {
               whiteSpace: 'pre-wrap'
             }}
           />
+
+          <button
+            onClick={handleDeploy}
+            disabled={isDeploying}
+            style={{
+              marginTop: '15px',
+              padding: '10px 20px',
+              fontWeight: 'bold',
+              backgroundColor: '#4CAF50',
+              color: 'white',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            {isDeploying ? 'Deploying...' : '🚀 Deploy Contract'}
+          </button>
+
+          {deployedAddress && (
+            <div style={{ marginTop: '10px', color: 'green' }}>
+              ✅ Deployed at: <code>{deployedAddress}</code>
+            </div>
+          )}
         </div>
       )}
     </div>

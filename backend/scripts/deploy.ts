@@ -1,22 +1,33 @@
 import { ethers } from "hardhat";
+import fs from "fs";
+import path from "path";
 
 async function main() {
   const [deployer] = await ethers.getSigners();
-  console.log("Deploying contracts with the account:", deployer.address);
+  console.log("🚀 Deploying with account:", deployer.address);
 
-  const ContractFactory = await ethers.getContractFactory("MyContract");
+  // Dynamically read the Solidity contract
+  const contractPath = path.join(__dirname, "../contracts/Generated.sol");
+  const solidityCode = fs.readFileSync(contractPath, "utf8");
+
+  // Extract the contract name
+  const match = solidityCode.match(/contract\s+(\w+)/);
+  if (!match) throw new Error("❌ No contract name found in Generated.sol");
+
+  const contractName = match[1];
+  console.log("📄 Detected Contract:", contractName);
+
+  // Compile and deploy
+  const ContractFactory = await ethers.getContractFactory(contractName);
   const contract = await ContractFactory.deploy();
 
-  // Wait for the contract to be mined
   await contract.waitForDeployment();
-
-  // Get the deployed contract address
   const address = await contract.getAddress();
 
-  console.log("Contract deployed at:", address);
+  console.log("✅ Contract deployed at:", address);
 }
 
 main().catch((err) => {
-  console.error(err);
+  console.error("❌ Deployment failed:", err);
   process.exit(1);
 });
