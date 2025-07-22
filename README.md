@@ -65,58 +65,60 @@ Infura/Alchemy Sepolia RPC key
 A funded wallet with Sepolia ETH (for deployment gas)
 
 🛠️ Installation & Setup
-1. Clone the Repo
-bash
-Copy
-Edit
+First, clone the project from GitHub. Just open your terminal and type:
 git clone https://github.com/yourname/zypher-contract-lab.git
+Then move into the project folder with:
 cd zypher-contract-lab
-2. Install Dependencies
-Install root and backend deps:
 
-bash
-Copy
-Edit
+Now, install all the dependencies. From the root folder, type:
 npm install
+Then go into the backend folder using:
 cd backend
+and install its dependencies too:
 npm install
-Then go to frontend:
 
-bash
-Copy
-Edit
+Once that’s done, go to the frontend folder by doing:
 cd ../frontend
+and again run:
 npm install
-3. Setup Environment Variables
-Create a .env in the root directory:
 
-env
-Copy
-Edit
+After installing everything, set up your environment variables.
+In the root directory, create a .env file. Inside it, paste the following lines (with your own values):
+
 PRIVATE_KEY=your_wallet_private_key
 RPC_URL=https://sepolia.infura.io/v3/YOUR_INFURA_KEY
-⚠️ Keep this file secret. Do not commit it.
 
-4. Compile Contracts (Optional)
-bash
-Copy
-Edit
+This gives Hardhat the credentials and endpoint it needs to deploy contracts to Sepolia testnet.
+
+Now, if you want, you can compile your contracts ahead of time. From the root directory, just run:
 npx hardhat compile
-5. Run Backend (Express + Hardhat)
-bash
-Copy
-Edit
-cd backend
-npm run dev
-Runs the backend at http://localhost:3000 with hot-reloading.
 
-6. Run Frontend (React + Vite)
-bash
-Copy
-Edit
-cd frontend
+To start the backend server, go into the backend folder (if you’re not already in it) and type:
 npm run dev
-Starts the frontend at http://localhost:5173.
+This will start the Express server locally on port 3000.
+
+Then open a new terminal window, go to the frontend folder, and type:
+npm run dev
+That’ll start your React + Vite frontend on port 5173.
+
+📤 How the Flow Works (Quick Summary)
+You open the frontend, fill out a simple form to define your contract.
+The UI shows you the generated Solidity code.
+When you hit "Deploy", your inputs are sent to the backend.
+The backend compiles and deploys the contract to Sepolia using Hardhat + Ethers.
+Once deployed, it sends back the contract address and transaction hash.
+A minimal UI appears for you to interact with the deployed contract right away.
+
+🧪 Example of Deploy API (If You’re Testing)
+The backend accepts a POST request at /api/deploy.
+You just send a JSON payload like this:
+message: "Hello Web3!"
+
+The response will contain:
+success: true
+address: "0x..."
+txHash: "0x..."
+
 
 📤 How Deployment Works
 User fills the form to generate a Solidity contract (e.g., message, ERC20).
